@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>解説一覧 - 統計検定2級</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body class="bg-slate-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-slate-800 mb-8 border-b-4 border-blue-500 pb-2">本日の学習解説</h1>
+        
+        <div id="explanationList" class="space-y-6">
+            </div>
+
+        <div class="mt-12 text-center">
+            <a href="TOP.html" class="inline-block bg-slate-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-700 transition">
+                TOPに戻って再挑戦
+            </a>
+        </div>
+    </div>
+
+    <script>
+        window.onload = async () => {
+            const data = localStorage.getItem('quizData');
+            if (!data) {
+                document.getElementById('explanationList').innerHTML = "<p>データが見つかりませんでした。</p>";
+                return;
+            }
+
+            const questions = JSON.parse(data);
+            const listContainer = document.getElementById('explanationList');
+
+            questions.forEach((q, index) => {
+                const section = document.createElement("div");
+                section.className = "bg-white p-6 rounded-2xl shadow-sm border border-slate-100";
+                section.innerHTML = `
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Q${q.id}</span>
+                        <span class="text-slate-400 text-sm">${q.category}</span>
+                    </div>
+                    <p class="text-slate-800 font-medium mb-4">${q.question}</p>
+                    <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-2">
+                        <p class="text-emerald-800 text-sm font-bold">正解：${q.answer}</p>
+                    </div>
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4">
+                        <p class="text-amber-900 text-xs font-bold mb-1">💡 解説</p>
+                        <p class="text-slate-700 text-sm">${q.explanation || "解説準備中"}</p>
+                    </div>
+                `;
+                listContainer.appendChild(section);
+            });
+
+            // 数式のレンダリングを実行
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        };
+    </script>
+</body>
+</html>
