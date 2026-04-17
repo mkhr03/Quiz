@@ -9,5 +9,17 @@
     "choices": ["標本分散", "不偏分散", "標準誤差"],
     "answer": "不偏分散",
     "explanation": "..."
+  },
+  
+  {
+    "id": 2,
+    "category": "不偏推定",
+    "difficulty": 2,
+    "priority": 3,
+    "type": "選択式",
+    "question": "あ",
+    "choices": ["標本分散", "不偏分散", "標準誤差"],
+    "answer": "不偏分散",
+    "explanation": "..."
   }
 ]
