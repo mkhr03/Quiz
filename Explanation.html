@@ -33,7 +33,7 @@
     <script>
         window.onload = async () => {
             const params = new URLSearchParams(window.location.search);
-            script.src = `questions/${genre}.js`;
+            const genre = params.get('genre');
 
             if (!genre) {
                 document.getElementById('explanationList').innerHTML = "<p class='text-center text-slate-500'>ジャンルが指定されていません。</p>";
@@ -45,10 +45,18 @@
             script.src = `questions/${genre}.js`;
 
             script.onload = () => {
-                if (typeof allQuestions !== 'undefined') {
+                if (typeof allQuestions !== 'undefined' && allQuestions.length > 0) {
                     document.getElementById('genreTitle').innerText = allQuestions[0].category;
                     renderExplanations(allQuestions);
+                } else {
+                    document.getElementById('explanationList').innerHTML = 
+                        "<p class='text-center text-red-500'>問題データが見つかりませんでした。</p>";
                 }
+            };
+
+            script.onerror = () => {
+                document.getElementById('explanationList').innerHTML = 
+                    `<p class='text-center text-red-500'>ファイル読み込みエラー: questions/${genre}.js が見つかりません。</p>`;
             };
         };
 
