@@ -2,60 +2,104 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>解説一覧 - 統計検定2級</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] }
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body class="bg-slate-50 p-8">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-slate-800 mb-8 border-b-4 border-blue-500 pb-2">本日の学習解説</h1>
+        <div class="flex items-center justify-between mb-8 border-b-4 border-blue-500 pb-2">
+            <h1 class="text-3xl font-bold text-slate-800">学習解説：<span id="genreTitle">読み込み中...</span></h1>
+        </div>
         
         <div id="explanationList" class="space-y-6">
             </div>
 
         <div class="mt-12 text-center">
-            <a href="TOP.html" class="inline-block bg-slate-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-700 transition">
-                TOPに戻って再挑戦
-            </a>
+            <button onclick="location.href='index.html'" class="inline-block bg-slate-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-700 transition">
+                TOPに戻る
+            </button>
         </div>
     </div>
 
+    <script id="dataScript"></script>
+
     <script>
         window.onload = async () => {
-            const data = localStorage.getItem('quizData');
-            if (!data) {
-                document.getElementById('explanationList').innerHTML = "<p>データが見つかりませんでした。</p>";
+            const params = new URLSearchParams(window.location.search);
+            script.src = `questions/${genre}.js`;
+
+            if (!genre) {
+                document.getElementById('explanationList').innerHTML = "<p class='text-center text-slate-500'>ジャンルが指定されていません。</p>";
                 return;
             }
 
-            const questions = JSON.parse(data);
-            const listContainer = document.getElementById('explanationList');
+            // 動的にJSファイルを読み込む
+            const script = document.getElementById('dataScript');
+            script.src = `questions/${genre}.js`;
 
-            questions.forEach((q, index) => {
+            script.onload = () => {
+                if (typeof allQuestions !== 'undefined') {
+                    document.getElementById('genreTitle').innerText = allQuestions[0].category;
+                    renderExplanations(allQuestions);
+                }
+            };
+        };
+
+        const parseMarkdown = (text) => {
+            if (!text) return "";
+            // 画像タグの置換
+            return text.replace(/!\[.*?\]\((.*?)\)/g, (match, path) => {
+                const cleanPath = path.replace(/\\/g, '').trim();
+                return `<img src="${cleanPath}" 
+                            class="w-full max-w-md h-auto rounded-xl my-4 shadow-md border border-slate-200 block" 
+                            onerror="this.style.display='none'">`;
+            });
+        };
+
+        function renderExplanations(questions) {
+            const listContainer = document.getElementById('explanationList');
+            listContainer.innerHTML = "";
+
+            questions.forEach((q) => {
                 const section = document.createElement("div");
-                section.className = "bg-white p-6 rounded-2xl shadow-sm border border-slate-100";
+                section.className = "bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-6";
+
+                const formattedQuestion = parseMarkdown(q.question);
+                const formattedExplanation = parseMarkdown(q.explanation || "解説準備中");
+
                 section.innerHTML = `
                     <div class="flex items-center gap-2 mb-3">
                         <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">Q${q.id}</span>
                         <span class="text-slate-400 text-sm">${q.category}</span>
                     </div>
-                    <p class="text-slate-800 font-medium mb-4">${q.question}</p>
-                    <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4 mb-2">
-                        <p class="text-emerald-800 text-sm font-bold">正解：${q.answer}</p>
-                    </div>
-                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4">
-                        <p class="text-amber-900 text-xs font-bold mb-1">💡 解説</p>
-                        <p class="text-slate-700 text-sm">${q.explanation || "解説準備中"}</p>
+                    <div class="text-slate-800 font-medium mb-4">${formattedQuestion}</div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-emerald-50 border-l-4 border-emerald-400 p-4">
+                            <p class="text-emerald-800 text-xs font-bold mb-1 uppercase">正解</p>
+                            <p class="text-slate-800 text-sm font-bold">${q.answer}</p>
+                        </div>
+                        
+                        <div class="bg-amber-50 border-l-4 border-amber-400 p-4">
+                            <p class="text-amber-900 text-xs font-bold mb-1 uppercase tracking-wider">💡 解説</p>
+                            <div class="text-slate-700 text-sm leading-relaxed">${formattedExplanation}</div>
+                        </div>
                     </div>
                 `;
                 listContainer.appendChild(section);
             });
 
-            // 数式のレンダリングを実行
             if (window.MathJax) {
-                MathJax.typesetPromise();
+                window.MathJax.typesetPromise();
             }
-        };
+        }
     </script>
 </body>
 </html>
