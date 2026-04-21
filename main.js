@@ -1,0 +1,102 @@
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+});
+
+function initApp() {
+    const app = document.getElementById('app');
+    
+    // 全体のレイアウト構築
+    app.innerHTML = `
+        <div class="bg-blue-600 p-8 rounded-t-2xl shadow-lg text-center">
+            <h1 class="text-white text-2xl font-bold">統計検定2級対策</h1>
+            <p class="text-blue-100 text-sm mt-2 opacity-90">AI共闘学習アプリ</p>
+        </div>
+        <div class="bg-white p-6 rounded-b-2xl shadow-xl border-x border-b border-slate-100 space-y-4">
+            <div id="menuContainer" class="space-y-4">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 px-1 text-center">読み込み中...</p>
+            </div>
+            <p class="text-center text-slate-400 text-[10px] mt-8 tracking-widest uppercase">© 2026 Statistics Learning Support</p>
+        </div>
+    `;
+
+    // メニューの描画（menu_data.jsから読み込み）
+    renderMenu(menuData);
+}
+
+function renderMenu(data) {
+    const container = document.getElementById('menuContainer');
+    container.innerHTML = '<p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 px-1">学習分野を選択</p>';
+
+    data.forEach(item => {
+        if (item.hasSubMenu) {
+            const wrapper = document.createElement('div');
+            wrapper.id = `wrapper-${item.id}`;
+            wrapper.className = "border-2 border-slate-100 rounded-2xl overflow-hidden transition-all duration-300";
+
+            const subButtonsHtml = item.subItems.map(sub => `
+                <button onclick="location.href='quiz.html?genre=${sub.genre}'" 
+                    class="w-full p-4 text-left text-sm text-slate-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all flex items-center gap-3 group/item">
+                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full group-hover/item:bg-blue-200"></span>
+                    ${sub.name}
+                </button>
+            `).join('');
+
+            wrapper.innerHTML = `
+                <button onclick="toggleSubMenu('${item.id}')" class="w-full p-5 bg-slate-50 hover:bg-blue-50 transition-all flex items-center justify-between group">
+                    <div class="text-left">
+                        <h2 class="text-lg font-bold text-slate-800 group-hover:text-blue-700">${item.title}</h2>
+                        <p class="text-xs text-slate-500 mt-1">${item.description}</p>
+                    </div>
+                    <div id="icon-bg-${item.id}" class="bg-white p-2 rounded-full shadow-sm text-slate-400 transition-all group-hover:text-blue-600">
+                        <svg id="icon-${item.id}" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </button>
+                <div id="${item.id}" class="hidden bg-white border-t border-blue-50 animate-slide-down">
+                    <div class="p-2 space-y-1">${subButtonsHtml}</div>
+                </div>
+            `;
+            container.appendChild(wrapper);
+        } else {
+            const btn = document.createElement('button');
+            btn.onclick = () => location.href = `quiz.html?genre=${item.genre}`;
+            btn.className = "w-full p-5 bg-slate-50 border-2 border-slate-100 rounded-2xl hover:border-blue-500 hover:bg-blue-50 transition-all group text-left";
+            btn.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 group-hover:text-blue-700">${item.title}</h2>
+                        <p class="text-xs text-slate-500 mt-1">${item.description}</p>
+                    </div>
+                    <div class="bg-white p-2 rounded-full shadow-sm text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            `;
+            container.appendChild(btn);
+        }
+    });
+}
+
+function toggleSubMenu(id) {
+    const subMenu = document.getElementById(id);
+    const icon = document.getElementById('icon-' + id);
+    const wrapper = document.getElementById('wrapper-' + id);
+    const iconBg = document.getElementById('icon-bg-' + id);
+    
+    const isHidden = subMenu.classList.contains('hidden');
+    
+    if (isHidden) {
+        subMenu.classList.remove('hidden');
+        wrapper.classList.replace('border-slate-100', 'border-blue-500');
+        icon.style.transform = 'rotate(180deg)';
+        if (iconBg) iconBg.classList.replace('text-slate-400', 'text-blue-600');
+    } else {
+        subMenu.classList.add('hidden');
+        wrapper.classList.replace('border-blue-500', 'border-slate-100');
+        icon.style.transform = 'rotate(0deg)';
+        if (iconBg) iconBg.classList.replace('text-blue-600', 'text-slate-400');
+    }
+}
