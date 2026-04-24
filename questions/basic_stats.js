@@ -45,7 +45,7 @@ const allQuestions = [
     priority: 2,
     type: "選択式",
     question: `
-      確率変数 \(X\) の期待値を \(E[X] = \mu\)、分散を \(Var(X) = \sigma^2\) とするとき、
+      確率変数 \\(X\\) の期待値を \\(E[X] = \\mu\\)、分散を \(Var(X) = \sigma^2\) とするとき、
       定数 \(a, b\) を用いて変換した新しい変数 \(Y = aX + b\) の分散 \(Var(Y)\) はどのように表されるか。
     `,
     choices: [
