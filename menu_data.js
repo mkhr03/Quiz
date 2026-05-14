@@ -28,5 +28,15 @@ const menuData = [
             { name: "離散型確率分布", genre: "discrete"},
             { name: "連続型確率分布", genre: "continuous"}
         ]
+    },
+    {
+        id: "statistical-modeling",
+        title: "統計的モデリング",
+        description: "線形回帰分析，分散分析など",
+        hasSubMenu: true,
+        subItems: [
+            { name: "線形回帰分析", genre: "linear-regression"},
+            { name: "分散分析", genre: "anova"}
+        ]
     }
 ];
