@@ -104,6 +104,11 @@
                 </div>
             </div>
 
+            <div id="answerContiner" class="hidden bg-emerald-50 border-l-4 border-emerald-400 p-4">
+                <h3 class="text-emerald-800 text-xs font-bold mb-1 uppercase">正解</h3>
+                <div class="text-slate-800 text-sm font-bold"></div>
+            </div>
+
             <div id="explanationContainer" class="hidden mt-6 p-6 bg-amber-50 border-l-4 border-amber-400 rounded-r-xl">
                 <h2 class="font-bold text-amber-800 mb-2">💡 正解の解説</h2>
                 <div id="explanation" class="text-slate-700 text-sm leading-relaxed"></div>
@@ -255,16 +260,27 @@
 
             if (isCorrect) {
                 element.classList.add("border-emerald-500", "bg-emerald-50");
+
+                if(currentQuestion.type === "選択式") element.textContent = `${currentQuestion.answer} : 正解`;
             } else {
                 element.classList.add("border-rose-500", "bg-rose-50");
                 if (currentQuestion.type === "回答式") element.value = `正解: ${currentQuestion.answer}`;
+                if (currentQuestion.type === "選択式") element.textContent=  `${currentQuestion.answer} : 不正解`
             }
 
             // 解説表示
             const replaceImage = (text) => text.replace(/!\[.*?\]\((.*?)\)/g, '<img src="$1" class="w-full h-auto rounded-xl my-4 shadow-sm border border-slate-200">');
             document.getElementById("explanation").innerHTML = replaceImage(currentQuestion.explanation || "解説なし");
             document.getElementById("explanationContainer").classList.remove("hidden");
-            document.getElementById("nextBtn").classList.remove("hidden");
+
+            const nextBtn = document.getElementById("nextBtn");
+            nextBtn.classList.remove("hidden");
+
+            if (currentIndex == allQuestions.length - 1){
+                nextBtn.textContent = "解説ページへ進む"
+            }else{
+                nextBtn.textContent = "次の問題へ進む"
+            };
 
             if (window.MathJax) MathJax.typesetPromise();
         }
@@ -344,11 +360,10 @@
                 // まだ問題がある場合は次の問題を表示
                 renderQuestion(allQuestions[currentIndex]);
             } else {
-
                 // 現在のURLからジャンル名を取得
                 const params = new URLSearchParams(window.location.search);
                 const genre = params.get('genre');
-
+                
                 // ジャンルを引き継いで解説ページへ遷移
                 if (genre) {
                     window.location.href = `Explanation.html?genre=${genre}`;
