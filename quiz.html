@@ -58,8 +58,8 @@
                         統計数値表を確認
                     </span>
                     <span
-                        class="text-[10px] text-slate-400 bg-white px-2 py-1 rounded border border-slate-200 uppercase font-bold">Show
-                        / Hide</span>
+                        class="text-[10px] text-slate-400 bg-white px-2 py-1 rounded border border-slate-200 uppercase font-bold">見る
+                        / 隠す</span>
                 </button>
 
                 <!-- ここに ID "statsTableContainer" を設定 -->
@@ -77,7 +77,7 @@
                     </div>
 
                     <!-- 画像表示エリア -->
-                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner">
+                    <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner max-h-80 overflow-y-auto">
                         <img id="displayStatsTable" src="" alt="統計数値表" class="w-full h-auto rounded hidden">
                     </div>
                     <p id="tableDescription" class="text-[10px] text-slate-500 mt-2 px-1"></p>
@@ -104,9 +104,9 @@
                 </div>
             </div>
 
-            <div id="answerContiner" class="hidden bg-emerald-50 border-l-4 border-emerald-400 p-4">
+            <div id="answerContainer" class="hidden bg-emerald-50 border-l-4 border-emerald-400 p-4 mt-6">
                 <h3 class="text-emerald-800 text-xs font-bold mb-1 uppercase">正解</h3>
-                <div class="text-slate-800 text-sm font-bold"></div>
+                <div id="answer" class="text-slate-800 text-sm font-bold"></div>
             </div>
 
             <div id="explanationContainer" class="hidden mt-6 p-6 bg-amber-50 border-l-4 border-amber-400 rounded-r-xl">
@@ -126,6 +126,7 @@
     <script>
         let currentIndex = 0;
         let currentQuestion = null;
+        let correctCount = 0;
 
         window.onload = async () => {
             const params = new URLSearchParams(window.location.search);
@@ -220,6 +221,7 @@
 
             document.getElementById("questionText").innerHTML = replaceImage(q.question);
             document.getElementById("explanationContainer").classList.add("hidden");
+            document.getElementById("answerContainer").classList.add("hidden");
             document.getElementById("nextBtn").classList.add("hidden");
 
             const ansContainer = document.getElementById("answerArea");
@@ -258,20 +260,24 @@
             const buttons = container.querySelectorAll("button");
             buttons.forEach(b => b.disabled = true);
 
+            //正解と不正解の表示
             if (isCorrect) {
-                element.classList.add("border-emerald-500", "bg-emerald-50");
+                correctCount++;
 
+                element.classList.add("border-emerald-500", "bg-emerald-50");
                 if(currentQuestion.type === "選択式") element.textContent = `${currentQuestion.answer} : 正解`;
             } else {
                 element.classList.add("border-rose-500", "bg-rose-50");
                 if (currentQuestion.type === "回答式") element.value = `正解: ${currentQuestion.answer}`;
-                if (currentQuestion.type === "選択式") element.textContent=  `${currentQuestion.answer} : 不正解`
+                if (currentQuestion.type === "選択式") element.textContent=  `${submittedValue} : 不正解`
             }
 
             // 解説表示
             const replaceImage = (text) => text.replace(/!\[.*?\]\((.*?)\)/g, '<img src="$1" class="w-full h-auto rounded-xl my-4 shadow-sm border border-slate-200">');
             document.getElementById("explanation").innerHTML = replaceImage(currentQuestion.explanation || "解説なし");
             document.getElementById("explanationContainer").classList.remove("hidden");
+            document.getElementById("answer").innerHTML = replaceImage(currentQuestion.answer);
+            document.getElementById("answerContainer").classList.remove("hidden");
 
             const nextBtn = document.getElementById("nextBtn");
             nextBtn.classList.remove("hidden");
@@ -366,7 +372,7 @@
                 
                 // ジャンルを引き継いで解説ページへ遷移
                 if (genre) {
-                    window.location.href = `Explanation.html?genre=${genre}`;
+                    window.location.href = `Explanation.html?genre=${genre}&correct=${correctCount}&total=${allQuestions.length}`;
                 } else {
                     window.location.href = 'index.html';
                 }

@@ -18,6 +18,17 @@
             <h1 class="text-3xl font-bold text-slate-800">学習解説：<span id="genreTitle">読み込み中...</span></h1>
         </div>
         
+        <div id="resultBoard" class="hidden mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-6 text-center shadow-sm">
+            <h2 class="text-sm font-bold text-blue-800 uppercase tracking-wider mb-2">クイズお疲れ様でした！今回の結果</h2>
+            <div class="text-3xl font-extrabold text-slate-800 my-3">
+                <span id="totalQuestionsCount" class="text-2xl text-slate-500">--</span> 問中 
+                <span id="correctAnswersCount" class="text-blue-600">--</span> 問正解！
+            </div>
+            <div class="inline-block bg-white px-4 py-1.5 rounded-full text-xs font-bold text-indigo-600 border border-indigo-100 shadow-xs">
+                正答率: <span id="accuracyRate">--</span>%
+            </div>
+        </div>
+
         <div id="explanationList" class="space-y-6">
             </div>
 
@@ -34,6 +45,21 @@
         window.onload = async () => {
             const params = new URLSearchParams(window.location.search);
             const genre = params.get('genre');
+            const correct = params.get('correct');
+            const total = params.get('total');
+            
+            if (correct !== null && total !== null){
+                const totalNum = parseInt(total, 10);
+                const correctNum = parseInt(correct, 10);
+                const accuracy = totalNum > 0 ? Math.round((correctNum / totalNum) * 100) : 0;
+
+                document.getElementById('totalQuestionsCount').innerText = totalNum;
+                document.getElementById('correctAnswersCount').innerText = correctNum;
+                document.getElementById('accuracyRate').innerText = accuracy;
+                
+                // hiddenを外して表示
+                document.getElementById('resultBoard').classList.remove('hidden');
+            }
 
             if (!genre) {
                 document.getElementById('explanationList').innerHTML = "<p class='text-center text-slate-500'>ジャンルが指定されていません。</p>";
